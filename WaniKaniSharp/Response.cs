@@ -53,6 +53,13 @@ namespace Nekogumi.WaniKaniSharp
                 DateTime? DataUpdatedAt,
                 TData Data);
 
+    public record Resource<TData>(
+        long Id,
+        ObjectType Object,
+        string Url,
+        DateTime? DataUpdatedAt,
+        TData Data
+        );
 
 
 
@@ -83,8 +90,8 @@ namespace Nekogumi.WaniKaniSharp
                 DateTime? DataUpdatedAt,
                 Pages Pages,
                 int TotalCount,
-                TData[] Data)
-        : Response<TData[]>(Object, Url, DataUpdatedAt, Data)
+                Resource<TData>[] Data)
+        : Response<Resource<TData>[]>(Object, Url, DataUpdatedAt, Data)
         //, IReadOnlyList<TData>
         //where TData : IResourceData
     {
@@ -106,13 +113,6 @@ namespace Nekogumi.WaniKaniSharp
     /// <param name="NextUrl">The URL of the next page of results.If there are no more results, the value is null.</param>
     /// <param name="PreviousUrl">The URL of the previous page of results. If there are no results at all or no previous page to go to, the value is null.</param>
     /// <param name="PerPage">Maximum number of resources delivered for this collection.</param>
-    public record Pages(string NextUrl, string PreviousUrl, int PerPage);
+    public record Pages(string? NextUrl, string? PreviousUrl, int PerPage);
 
-    public record Resource<TData>(
-        long Id,
-        ObjectType Object,
-        string Url,
-        DateTime? DataUpdatedAt,
-        TData Data
-        );
 }
