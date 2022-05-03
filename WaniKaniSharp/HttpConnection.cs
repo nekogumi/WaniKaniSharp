@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Nekogumi.WaniKaniSharp
+namespace Nekogumi.WaniKani.API
 {
     public class TooFastWarningEventArgs : EventArgs
     {

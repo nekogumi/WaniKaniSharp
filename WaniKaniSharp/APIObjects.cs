@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nekogumi.WaniKaniSharp
+namespace Nekogumi.WaniKani.API
 {
     public enum SubscriptionType
     {

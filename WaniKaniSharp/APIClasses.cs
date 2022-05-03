@@ -1,7 +1,7 @@
 // AUTO GENERATED FILE -- DO NOT EDIT
 using System;
 
-namespace Nekogumi.WaniKaniSharp
+namespace Nekogumi.WaniKani.API
 {
     #region assignment-data-structure
 

@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nekogumi.WaniKaniSharp
+namespace Nekogumi.WaniKani.API
 {
     public class LowerSnakeCaseNamingPolicy : JsonNamingPolicy
     {

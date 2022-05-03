@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nekogumi.WaniKaniSharp
+namespace Nekogumi.WaniKani.API
 {
     partial class WaniKaniConnection
     {
@@ -155,7 +155,7 @@ namespace Nekogumi.WaniKaniSharp
         public Task<ResponseCollection<SubjectData>> QuerySubjectsAsync(
                 IEnumerable<string>? types = null,
                 IEnumerable<string>? slugs = null,
-                IEnumerable<long>? levels = null,
+                IEnumerable<int>? levels = null,
                 bool? hidden = null,
                 DateTime? updated_after = null,
                 CacheStrategy cacheStrategy = CacheStrategy.Cache,

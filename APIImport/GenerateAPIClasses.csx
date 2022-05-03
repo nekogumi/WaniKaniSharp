@@ -99,7 +99,7 @@ using (var writer = new StreamWriter("..\\WaniKaniSharp\\APIClasses.cs"))
     writer.WriteLine("// AUTO GENERATED FILE -- DO NOT EDIT");
     writer.WriteLine("using System;");
     writer.WriteLine("");
-    writer.WriteLine("namespace Nekogumi.WaniKaniSharp");
+    writer.WriteLine("namespace Nekogumi.WaniKani.API");
     writer.WriteLine("{");
 
     foreach (var chapter in new HashSet<string>(classesChapter.Values))

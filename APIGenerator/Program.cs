@@ -92,7 +92,7 @@ writer.WriteLine("using System.Collections.Generic;");
 writer.WriteLine("using System.Threading;");
 writer.WriteLine("using System.Threading.Tasks;");
 writer.WriteLine("");
-writer.WriteLine("namespace Nekogumi.WaniKaniSharp");
+writer.WriteLine("namespace Nekogumi.WaniKani.API");
 writer.WriteLine("{");
 writer.Indent++;
 
@@ -164,7 +164,7 @@ string EndpointParameterTypeConverter(string Type, ResourceIdentification ressou
 
     Dictionary<string, string> exceptions = new()
     {
-
+        ["Subjects.levels"] = "IEnumerable<int>?",
     };
 
     if (exceptions.TryGetValue($"{ressource.ClassName}.{parameter}", out var newType))
