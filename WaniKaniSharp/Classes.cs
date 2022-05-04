@@ -180,60 +180,10 @@ namespace Nekogumi.WaniKani.Services
     #region Subjects
     
     /// <summary></summary>
-    /// <param name="AcceptedAnswer">Indicates if the meaning is used to evaluate user input for correctness.</param>
-    /// <param name="Meaning">A singular subject meaning.</param>
-    /// <param name="Primary">Indicates priority in the WaniKani system.</param>
-    public record MeaningObjectAttributes(
-        bool AcceptedAnswer,
-        string Meaning,
-        bool Primary);
-    
-    /// <summary></summary>
-    /// <param name="Meaning">A singular subject meaning.</param>
-    /// <param name="Type">Either whitelist or blacklist. When evaluating user input, whitelisted meanings are used to match for correctness. Blacklisted meanings are used to match for incorrectness.</param>
-    public record AuxiliaryMeaningObjectAttributes(
-        string Meaning,
-        string Type);
-    
-    /// <summary></summary>
-    /// <param name="ContentType">The content type of the image. Currently the API delivers image/png and image/svg+xml.</param>
-    /// <param name="Metadata">Details about the image. Each content_type returns a uniquely structured object.</param>
-    /// <param name="Url">The location of the image.</param>
-    public record CharacterImageObjectAttributes(
-        string ContentType,
-        PronunciationAudioMetadataObjectAttributes Metadata,
-        string Url);
-    
-    /// <summary></summary>
-    /// <param name="InlineStyles">The SVG asset contains built-in CSS styling</param>
-    public record WhenContentTypeIsCodeImageSvgXmlCode(
-        bool InlineStyles);
-    
-    /// <summary></summary>
-    /// <param name="Color">Color of the asset in hexadecimal</param>
-    /// <param name="Dimensions">Dimension of the asset in pixels</param>
-    /// <param name="StyleName">A name descriptor</param>
-    public record WhenContentTypeIsCodeImagePngCode(
-        string Color,
-        string Dimensions,
-        string StyleName);
-    
-    /// <summary></summary>
-    /// <param name="AcceptedAnswer">Indicates if the reading is used to evaluate user input for correctness.</param>
-    /// <param name="Primary">Indicates priority in the WaniKani system.</param>
-    /// <param name="Reading">A singular subject reading.</param>
-    /// <param name="Type">The kanji reading's classfication: kunyomi, nanori, or onyomi.</param>
-    public record ReadingObjectAttributes(
-        bool AcceptedAnswer,
-        bool Primary,
-        string Reading,
-        string Type);
-    
-    /// <summary></summary>
     /// <param name="AmalgamationSubjectIds">An array of numeric identifiers for the kanji that have the radical as a component.</param>
     /// <param name="AuxiliaryMeanings">Collection of auxiliary meanings. See table below for the object structure.</param>
     /// <param name="CharacterImages">A collection of images of the radical. See table below for the object structure.</param>
-    /// <param name="Characters">Unlike kanji and vocabulary, radicals can have a null value for characters. Not all radicals have a UTF entry, so the radical must be visually represented with an image instead.</param>
+    /// <param name="Characters">The UTF-8 characters for the subject, including kanji and hiragana.</param>
     /// <param name="ComponentSubjectIds">An array of numeric identifiers for the radicals that make up this kanji. Note that these are the subjects that must have passed assignments in order to unlock this subject's assignment.</param>
     /// <param name="ContextSentences">A collection of context sentences. See table below for the object structure.</param>
     /// <param name="CreatedAt">Timestamp when the subject was created.</param>
@@ -275,6 +225,53 @@ namespace Nekogumi.WaniKani.Services
         string Slug,
         int SpacedRepetitionSystemId,
         int[] VisuallySimilarSubjectIds);
+    
+    /// <summary></summary>
+    /// <param name="AcceptedAnswer">Indicates if the meaning is used to evaluate user input for correctness.</param>
+    /// <param name="Meaning">A singular subject meaning.</param>
+    /// <param name="Primary">Indicates priority in the WaniKani system.</param>
+    public record MeaningObjectAttributes(
+        bool AcceptedAnswer,
+        string Meaning,
+        bool Primary);
+    
+    /// <summary></summary>
+    /// <param name="Meaning">A singular subject meaning.</param>
+    /// <param name="Type">Either whitelist or blacklist. When evaluating user input, whitelisted meanings are used to match for correctness. Blacklisted meanings are used to match for incorrectness.</param>
+    public record AuxiliaryMeaningObjectAttributes(
+        string Meaning,
+        string Type);
+    
+    /// <summary></summary>
+    /// <param name="ContentType">The content type of the image. Currently the API delivers image/png and image/svg+xml.</param>
+    /// <param name="Metadata">Details about the image. Each content_type returns a uniquely structured object.</param>
+    /// <param name="Url">The location of the image.</param>
+    public record CharacterImageObjectAttributes(
+        string ContentType,
+        CharacterImageMetadataObjectAttributes Metadata,
+        string Url);
+    
+    /// <summary></summary>
+    /// <param name="Color">Color of the asset in hexadecimal</param>
+    /// <param name="Dimensions">Dimension of the asset in pixels</param>
+    /// <param name="InlineStyles">The SVG asset contains built-in CSS styling</param>
+    /// <param name="StyleName">A name descriptor</param>
+    public record CharacterImageMetadataObjectAttributes(
+        string Color,
+        string Dimensions,
+        bool InlineStyles,
+        string StyleName);
+    
+    /// <summary></summary>
+    /// <param name="AcceptedAnswer">Indicates if the reading is used to evaluate user input for correctness.</param>
+    /// <param name="Primary">Indicates priority in the WaniKani system.</param>
+    /// <param name="Reading">A singular subject reading.</param>
+    /// <param name="Type">The kanji reading's classfication: kunyomi, nanori, or onyomi.</param>
+    public record ReadingObjectAttributes(
+        bool AcceptedAnswer,
+        bool Primary,
+        string Reading,
+        string Type);
     
     /// <summary></summary>
     /// <param name="En">English translation of the sentence</param>

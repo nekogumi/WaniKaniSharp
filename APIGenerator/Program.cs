@@ -29,8 +29,6 @@ htmlDoc.LoadHtml(source);
 #region Parse HTML File
 
 var resources = new List<ResourceDefinition>();
-var classes = new List<ClassDefinition>();
-
 var resourcesIds = (from node in htmlDoc.DocumentNode.SelectNodes(
     "//*[@id='resources']/following-sibling::h1")
                     select new
@@ -39,24 +37,6 @@ var resourcesIds = (from node in htmlDoc.DocumentNode.SelectNodes(
                         QueryAllNode = node.SelectSingleNode("./following-sibling::h2[2]"),
                         Identification = new ResourceIdentification(node.Id, node.InnerText),
                     }).ToList();
-
-var skippedDataStructureTables = new[]
-{
-    "incorrect-answers",
-};
-
-var skippedChapterIds = new[]
-{
-    "common-attributes",
-};
-
-var mergedClasses = new Dictionary<string, string>
-{
-    ["subject-data-structure"] = "subject-data-structure",
-    ["radical-attributes"] = "subject-data-structure",
-    ["kanji-attributes"] = "subject-data-structure",
-    ["vocabulary-attributes"] = "subject-data-structure",
-};
 
 foreach (var resource in resourcesIds)
 {
@@ -95,12 +75,41 @@ foreach (var resource in resourcesIds)
 
     Console.WriteLine($"    {className} {resource.DataStructureNode.InnerText[..^" Data Structure".Length]}");
 
+    resources.Add(new ResourceDefinition(resource.Identification, endpoint, dataStructure));
 
+}
+
+
+var skippedDataStructureTables = new[]
+{
+    "incorrect-answers",
+};
+
+var skippedChapterIds = new[]
+{
+    "common-attributes",
+    "when-content_type-is-code-image-svg-xml-code",
+};
+
+var mergedClasses = new Dictionary<string, string>
+{
+    ["subject-data-structure"] = "subject-data-structure",
+    ["radical-attributes"] = "subject-data-structure",
+    ["kanji-attributes"] = "subject-data-structure",
+    ["vocabulary-attributes"] = "subject-data-structure",
+    ["reading-object-attributes"] = "reading-object-attributes",
+    ["reading-object-attributes-2"] = "reading-object-attributes",
+    ["character-image-metadata-object-attributes"] = "character-image-metadata-object-attributes",
+    ["when-content_type-is-code-image-png-code"] = "character-image-metadata-object-attributes",
+};
+
+var classesDeclarations = new List<ClassDeclaration>();
+foreach (var resource in resourcesIds)
+{
     var left = $"({resource.DataStructureNode.XPath} | {resource.DataStructureNode.XPath}/following-sibling::*[self::table or self::h3 or self::h4 or self::h5])";
     var right = $"{resource.QueryAllNode.XPath}/preceding-sibling::*[self::table or self::h2 or self::h3 or self::h4 or self::h5]";
     var nodes = htmlDoc.DocumentNode.SelectNodes($"{left}[count(.|{right}) = count({right})]");
 
-    //Console.WriteLine("-------------------------");
     string id = string.Empty;
     string label = string.Empty;
     foreach (var node in nodes)
@@ -109,60 +118,61 @@ foreach (var resource in resourcesIds)
         {
             if (!skippedDataStructureTables.Contains(id))
             {
-                var fields = (from row in node.SelectNodes("./tbody/tr")
-                              let cells = (from cell in row.SelectNodes("./td")
-                                           select cell.InnerText).ToArray()
-                              select new ParameterDefinition(
-                                  Name: cells[0].SnakeToUpperCamelCase(),
-                                  Type: FieldTypeConverter(cells[1], id, cells[0]),
-                                  Description: cells[2].UnescapeHTML()
-                              )).ToArray();
                 if (mergedClasses.TryGetValue(id, out var mergedClassId))
                 {
-                    var @class = classes.FirstOrDefault(c => c.Id == mergedClassId);
+                    var @class = classesDeclarations.FirstOrDefault(c => c.Id == mergedClassId);
                     if (@class is null)
-                        @class = new ClassDefinition(resource.Identification, mergedClassId, label, fields);
+                        classesDeclarations.Add(new ClassDeclaration(resource.Identification, mergedClassId, label, new List<HtmlNode> { node }));
                     else
-                    {
-                        classes.Remove(@class);
-                        var mergedFields = @class.Fields.ToList();
-                        foreach (var field in fields)
-                        {
-                            var existing = mergedFields.FirstOrDefault(f => f.Name == field.Name);
-                            if (existing is null)
-                                mergedFields.Add(field);
-                            else if (existing.Type != field.Type)
-                            {
-                                if (existing.Type + "?" == field.Type) 
-                                {
-                                    mergedFields.Remove(existing);
-                                    mergedFields.Add(field);
-                                }
-                                else if (existing.Type != field.Type + "?")
-                                    mergedFields.Add(field);
-                            }
-                        }
-
-                        @class = new ClassDefinition(@class.Resource, @class.Id, @class.Name, mergedFields.ToArray());
-                    }
-                    classes.Add(@class);
+                        @class.Tables.Add(node);
                 }
                 else
-                {
-                    var @class = new ClassDefinition(resource.Identification, id, label, fields);
-                    classes.Add(@class);
-                }
+                    classesDeclarations.Add(new ClassDeclaration(resource.Identification, id, label, new List<HtmlNode> { node }));
             }
         }
         else if (!skippedChapterIds.Contains(node.Id))
         {
             id = node.Id;
             label = node.InnerText;
-            Console.WriteLine($"{node.Id}: {node.InnerText}");
+            //Console.WriteLine($"{node.Id}: {node.InnerText}");
+        }
+    }
+}
+
+var classes = new List<ClassDefinition>();
+foreach (var @class in classesDeclarations)
+{
+    var fieldsQuery = from node in @class.Tables
+                      from row in node.SelectNodes("./tbody/tr")
+                      let cells = (from cell in row.SelectNodes("./td")
+                                   select cell.InnerText).ToArray()
+                      let fieldName = cells[0].SnakeToUpperCamelCase()
+                      group new ParameterDefinition(
+                          Name: fieldName,
+                          Type: FieldTypeConverter(cells[1], @class.ClassName, fieldName),
+                          Description: cells[2].UnescapeHTML()
+                      ) by fieldName;
+
+    var fields = new List<ParameterDefinition>();
+    foreach (var fieldGroup in fieldsQuery)
+    {
+        if (fieldGroup.Count() == 1)
+            fields.Add(fieldGroup.First());
+        else
+        {
+            var types = (from field in fieldGroup
+                         orderby field.Type
+                         select field.Type).Distinct().ToArray();
+            if (types.Length == 1)
+                fields.Add(fieldGroup.First());
+            else if (types.Length == 2 && types[0] + "?" == types[1])
+                fields.Add(new ParameterDefinition(fieldGroup.Key, types[1], fieldGroup.First().Description));
+            else
+                fields.AddRange(fieldGroup);
         }
     }
 
-    resources.Add(new ResourceDefinition(resource.Identification, endpoint, dataStructure));
+    classes.Add(new ClassDefinition(@class.Resource, @class.Id, @class.Label, fields.ToArray()));
 }
 
 #endregion
@@ -244,46 +254,6 @@ foreach (var resource in resourcesIds)
 }
 
 {
-
-    var skipClasses = new[]
-    {
-        "ReadingObjectAttributes2",
-    };
-
-
-    var attributeTypes = new Dictionary<string, string>()
-    {
-        ["SubscriptionObjectAttributes.Type"] = "SubscriptionType",
-        ["AssignmentData.SubjectType"] = "SubjectType",
-    };
-
-    var objectTypeClassNames = new Dictionary<string, string>()
-    {
-        ["MetadataObjectAttributes"] = "PronunciationAudioMetadataObjectAttributes",
-    };
-
-    var classesName = new Dictionary<string, string>();
-    foreach (var x in classes)
-    {
-        var className = x.Id.Replace('-', '_').SnakeToUpperCamelCase();
-        if (skipClasses.Contains(className)) continue;
-        if (className.EndsWith("DataStructure"))
-        {
-            className = className.Replace("DataStructure", "Data");
-        }
-        else
-        {
-            //.Replace("ObjectAttributes", "")
-            //.Replace("Attributes", "")
-
-            //className = "Api" + className;
-        }
-        classesName[x.Id] = className;
-    }
-
-
-
-
     using var stream = new StreamWriter(SiblingPath("..\\WaniKaniSharp\\Classes.cs"));
     using var writer = new IndentedTextWriter(stream, "    ");
 
@@ -301,47 +271,28 @@ foreach (var resource in resourcesIds)
         writer.WriteLine();
 
         foreach (var @class in group)
-            if (classesName.TryGetValue(@class.Id, out var className))
+        {
+            var fields = new List<(string fieldName, string type, string desc)>();
+            foreach (var field in from field in @class.Fields
+                                  orderby field.Name
+                                  select field)
             {
-                var fields = new List<(string fieldName, string type, string desc)>();
-                foreach (var field in from field in @class.Fields
-                                      orderby field.Name
-                                      select field)
-                {
-                    var fieldName = field.Name;
-                    if (!attributeTypes.TryGetValue(className + "." + fieldName, out var type))
-                    {
-                        type = field.Type;
-                        if (type == "Object")
-                        {
-                            type = fieldName + "ObjectAttributes";
-                            if (objectTypeClassNames.ContainsKey(type))
-                                type = objectTypeClassNames[type];
-                        }
-                        else if (type == "Array of objects")
-                        {
-                            type = fieldName + "ObjectAttributes";
-                            if (!classesName.ContainsValue(type))
-                                type = (fieldName.EndsWith("s") ? fieldName[0..^1] : fieldName) + "ObjectAttributes";
-                            if (objectTypeClassNames.ContainsKey(type))
-                                type = objectTypeClassNames[type];
-                            type += "[]";
-                        }
-                    }
-                    fields.Add((fieldName, type, field.Description));
-                }
-
-                writer.WriteLine($"/// <summary></summary>");
-                foreach (var (fieldName, type, desc) in fields)
-                    writer.WriteLine($"/// <param name=\"{fieldName}\">{desc}</param>");
-
-                writer.WriteLine($"public record {className}(");
-                writer.Indent++;
-                for (int i = 0; i < fields.Count; i++)
-                    writer.WriteLine($"{fields[i].type} {fields[i].fieldName}{(i == fields.Count - 1 ? ");" : ",")}");
-                writer.Indent--;
-                writer.WriteLine();
+                var fieldName = field.Name;
+                var type = field.Type;
+                fields.Add((fieldName, type, field.Description));
             }
+
+            writer.WriteLine($"/// <summary></summary>");
+            foreach (var (fieldName, type, desc) in fields)
+                writer.WriteLine($"/// <param name=\"{fieldName}\">{desc}</param>");
+
+            writer.WriteLine($"public record {@class.ClassName}(");
+            writer.Indent++;
+            for (int i = 0; i < fields.Count; i++)
+                writer.WriteLine($"{fields[i].type} {fields[i].fieldName}{(i == fields.Count - 1 ? ");" : ",")}");
+            writer.Indent--;
+            writer.WriteLine();
+        }
 
         writer.WriteLine("#endregion");
         writer.WriteLine();
@@ -381,18 +332,21 @@ string EndpointParameterTypeConverter(string Type, ResourceIdentification ressou
     return Type;
 }
 
-string FieldTypeConverter(string Type, string @classId, string parameter)
+string FieldTypeConverter(string type, string @classId, string fieldName)
 {
 
     Dictionary<string, string> exceptions = new()
     {
-
+        ["SubscriptionObjectAttributes.Type"] = "SubscriptionType",
+        ["AssignmentData.SubjectType"] = "SubjectType",
+        ["CharacterImageObjectAttributes.Metadata"] = "CharacterImageMetadataObjectAttributes",
+        ["PronunciationAudioObjectAttributes.Metadata"] = "PronunciationAudioMetadataObjectAttributes",
     };
 
-    if (exceptions.TryGetValue($"{classId}.{parameter}", out var newType))
+    if (exceptions.TryGetValue($"{classId}.{fieldName}", out var newType))
         return newType;
 
-    Dictionary<string, string> EndpointParameterTypeConverterDict = new()
+    Dictionary<string, string> FieldTypeConverterDict = new()
     {
         ["Integer"] = "int",
         ["null or Integer"] = "int?",
@@ -404,14 +358,24 @@ string FieldTypeConverter(string Type, string @classId, string parameter)
         ["Array of integers"] = "int[]",
         ["Date"] = "DateTime",
         ["null or Date"] = "DateTime?",
-        //["Array of objects"] = "object[]",
         ["Array"] = "object[]",
-        //["Object"] = "object",
     };
 
-    if (EndpointParameterTypeConverterDict.TryGetValue(Type, out newType))
-        return newType;
-    return Type;
+    if (FieldTypeConverterDict.TryGetValue(type, out newType))
+        type = newType;
+    else if (type == "Object")
+    {
+        type = fieldName + "ObjectAttributes";
+    }
+    else if (type == "Array of objects")
+    {
+        type = fieldName + "ObjectAttributes";
+        if (classesDeclarations.FirstOrDefault(c => c.ClassName == type) is null)
+            type = (fieldName.EndsWith("s") ? fieldName[0..^1] : fieldName) + "ObjectAttributes";
+        type += "[]";
+    }
+
+    return type;
 }
 
 #endregion
@@ -458,7 +422,37 @@ record EndpointDefinition(string Command, string Title, ParameterDefinition[] Pa
     }
 }
 
-record ClassDefinition(ResourceIdentification Resource, string Id, string Name, ParameterDefinition[] Fields);
+record ClassDefinition(ResourceIdentification Resource, string Id, string Name, ParameterDefinition[] Fields)
+{
+    public string ClassName
+    {
+        get
+        {
+            var className = Id.Replace('-', '_').SnakeToUpperCamelCase();
+            if (className.EndsWith("DataStructure"))
+                className = className.Replace("DataStructure", "Data");
+            return className;
+        }
+    }
+}
+
+record ClassDeclaration(
+    ResourceIdentification Resource,
+    string Id,
+    string Label,
+    List<HtmlNode> Tables)
+{
+    public string ClassName
+    {
+        get
+        {
+            var className = Id.Replace('-', '_').SnakeToUpperCamelCase();
+            if (className.EndsWith("DataStructure"))
+                className = className.Replace("DataStructure", "Data");
+            return className;
+        }
+    }
+}
 
 record ResourceDataStructureDefinition(string ClassName, string Description);
 
