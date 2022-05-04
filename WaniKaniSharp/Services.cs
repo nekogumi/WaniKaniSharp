@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nekogumi.WaniKani.API
+namespace Nekogumi.WaniKani.Services
 {
     partial class WaniKaniConnection
     {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using FASTER.core;
 
-namespace Nekogumi.WaniKani.API
+namespace Nekogumi.WaniKani.Services
 {
 
     public record ETagCacheEntry(

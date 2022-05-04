@@ -1,10 +1,10 @@
 // AUTO GENERATED FILE -- DO NOT EDIT
 using System;
 
-namespace Nekogumi.WaniKani.API
+namespace Nekogumi.WaniKani.Services
 {
-    #region assignment-data-structure
-
+    #region Assignments
+    
     /// <summary></summary>
     /// <param name="AvailableAt">Timestamp when the related subject will be available in the user's review queue.</param>
     /// <param name="BurnedAt">Timestamp when the user reaches SRS stage 9 the first time.</param>
@@ -16,7 +16,7 @@ namespace Nekogumi.WaniKani.API
     /// <param name="StartedAt">Timestamp when the user completes the lesson for the related subject.</param>
     /// <param name="SubjectId">Unique identifier of the associated subject.</param>
     /// <param name="SubjectType">The type of the associated subject, one of: kanji, radical, or vocabulary.</param>
-    /// <param name="UnlockedAt">The timestamp when the related subject has its prerequisites satisfied and is made available in lessons. Prerequisites are:The subject components have reached SRS stage 5 once (they have been �passed�).The user's level is equal to or greater than the level of the assignment�s subject.</param>
+    /// <param name="UnlockedAt">The timestamp when the related subject has its prerequisites satisfied and is made available in lessons. Prerequisites are:The subject components have reached SRS stage 5 once (they have been “passed”).The user's level is equal to or greater than the level of the assignment's subject.</param>
     public record AssignmentData(
         DateTime? AvailableAt,
         DateTime? BurnedAt,
@@ -31,9 +31,9 @@ namespace Nekogumi.WaniKani.API
         DateTime? UnlockedAt);
     
     #endregion
-
-    #region level-progression-data-structure
-
+    
+    #region Level Progressions
+    
     /// <summary></summary>
     /// <param name="AbandonedAt">Timestamp when the user abandons the level. This is primary used when the user initiates a reset.</param>
     /// <param name="CompletedAt">Timestamp when the user burns 100% of the assignments belonging to the associated subject's level.</param>
@@ -52,9 +52,9 @@ namespace Nekogumi.WaniKani.API
         DateTime? UnlockedAt);
     
     #endregion
-
-    #region reset-data-structure
-
+    
+    #region Resets
+    
     /// <summary></summary>
     /// <param name="ConfirmedAt">Timestamp when the user confirmed the reset.</param>
     /// <param name="CreatedAt">Timestamp when the reset was created.</param>
@@ -67,9 +67,9 @@ namespace Nekogumi.WaniKani.API
         int TargetLevel);
     
     #endregion
-
-    #region review-data-structure
-
+    
+    #region Reviews
+    
     /// <summary></summary>
     /// <param name="AssignmentId">Unique identifier of the associated assignment.</param>
     /// <param name="CreatedAt">Timestamp when the review was created.</param>
@@ -90,9 +90,9 @@ namespace Nekogumi.WaniKani.API
         int SubjectId);
     
     #endregion
-
-    #region review-statistic-data-structure
-
+    
+    #region Review Statistics
+    
     /// <summary></summary>
     /// <param name="CreatedAt">Timestamp when the review statistic was created.</param>
     /// <param name="Hidden">Indicates if the associated subject has been hidden, preventing it from appearing in lessons or reviews.</param>
@@ -123,9 +123,9 @@ namespace Nekogumi.WaniKani.API
         string SubjectType);
     
     #endregion
-
-    #region spaced-repetition-system-data-structure
-
+    
+    #region Spaced Repetition Systems
+    
     /// <summary></summary>
     /// <param name="BurningStagePosition">position of the burning stage.</param>
     /// <param name="CreatedAt">Timestamp when the spaced_repetition_system was created.</param>
@@ -155,9 +155,9 @@ namespace Nekogumi.WaniKani.API
         int Position);
     
     #endregion
-
-    #region study-material-data-structure
-
+    
+    #region Study Materials
+    
     /// <summary></summary>
     /// <param name="CreatedAt">Timestamp when the study material was created.</param>
     /// <param name="Hidden">Indicates if the associated subject has been hidden, preventing it from appearing in lessons or reviews.</param>
@@ -176,9 +176,9 @@ namespace Nekogumi.WaniKani.API
         string SubjectType);
     
     #endregion
-
-    #region subject-data-structure
-
+    
+    #region Subjects
+    
     /// <summary></summary>
     /// <param name="AuxiliaryMeanings">Collection of auxiliary meanings. See table below for the object structure.</param>
     /// <param name="Characters">The UTF-8 characters for the subject, including kanji and hiragana.</param>
@@ -329,9 +329,9 @@ namespace Nekogumi.WaniKani.API
         string VoiceDescription);
     
     #endregion
-
-    #region summary-data-structure
-
+    
+    #region Summary
+    
     /// <summary></summary>
     /// <param name="Lessons">Details about subjects available for lessons. See table below for object structure.</param>
     /// <param name="NextReviewsAt">Earliest date when the reviews are available. Is null when the user has no reviews scheduled.</param>
@@ -356,9 +356,9 @@ namespace Nekogumi.WaniKani.API
         int[] SubjectIds);
     
     #endregion
-
-    #region user-data-structure
-
+    
+    #region User
+    
     /// <summary></summary>
     /// <param name="CurrentVacationStartedAt">If the user is on vacation, this will be the timestamp of when that vacation started. If the user is not on vacation, this is null.</param>
     /// <param name="Level">The current level of the user. This ignores subscription status.</param>
@@ -403,9 +403,9 @@ namespace Nekogumi.WaniKani.API
         SubscriptionType Type);
     
     #endregion
-
-    #region voice-actor-data-structure
-
+    
+    #region Voice actors
+    
     /// <summary></summary>
     /// <param name="Description">Details about the voice actor.</param>
     /// <param name="Gender">male or female</param>
@@ -416,5 +416,5 @@ namespace Nekogumi.WaniKani.API
         string Name);
     
     #endregion
-
+    
 }
