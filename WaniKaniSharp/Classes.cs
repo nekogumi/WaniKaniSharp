@@ -180,38 +180,13 @@ namespace Nekogumi.WaniKani.Services
     #region Subjects
     
     /// <summary></summary>
-    /// <param name="AuxiliaryMeanings">Collection of auxiliary meanings. See table below for the object structure.</param>
-    /// <param name="Characters">The UTF-8 characters for the subject, including kanji and hiragana.</param>
-    /// <param name="CreatedAt">Timestamp when the subject was created.</param>
-    /// <param name="DocumentUrl">A URL pointing to the page on wanikani.com that provides detailed information about this subject.</param>
-    /// <param name="HiddenAt">Timestamp when the subject was hidden, indicating associated assignments will no longer appear in lessons or reviews and that the subject page is no longer visible on wanikani.com.</param>
-    /// <param name="LessonPosition">The position that the subject appears in lessons. Note that the value is scoped to the level of the subject, so there are duplicate values across levels.</param>
-    /// <param name="Level">The level of the subject, from 1 to 60.</param>
-    /// <param name="MeaningMnemonic">The subject's meaning mnemonic.</param>
-    /// <param name="Meanings">The subject meanings. See table below for the object structure.</param>
-    /// <param name="Slug">The string that is used when generating the document URL for the subject. Radicals use their meaning, downcased. Kanji and vocabulary use their characters.</param>
-    /// <param name="SpacedRepetitionSystemId">Unique identifier of the associated spaced_repetition_system.</param>
-    public record SubjectData(
-        AuxiliaryMeaningObjectAttributes[] AuxiliaryMeanings,
-        string Characters,
-        DateTime CreatedAt,
-        string DocumentUrl,
-        DateTime? HiddenAt,
-        int LessonPosition,
-        int Level,
-        string MeaningMnemonic,
-        MeaningObjectAttributes[] Meanings,
-        string Slug,
-        int SpacedRepetitionSystemId);
-    
-    /// <summary></summary>
+    /// <param name="AcceptedAnswer">Indicates if the meaning is used to evaluate user input for correctness.</param>
     /// <param name="Meaning">A singular subject meaning.</param>
     /// <param name="Primary">Indicates priority in the WaniKani system.</param>
-    /// <param name="AcceptedAnswer">Indicates if the meaning is used to evaluate user input for correctness.</param>
     public record MeaningObjectAttributes(
+        bool AcceptedAnswer,
         string Meaning,
-        bool Primary,
-        bool AcceptedAnswer);
+        bool Primary);
     
     /// <summary></summary>
     /// <param name="Meaning">A singular subject meaning.</param>
@@ -221,22 +196,13 @@ namespace Nekogumi.WaniKani.Services
         string Type);
     
     /// <summary></summary>
-    /// <param name="AmalgamationSubjectIds">An array of numeric identifiers for the kanji that have the radical as a component.</param>
-    /// <param name="Characters">Unlike kanji and vocabulary, radicals can have a null value for characters. Not all radicals have a UTF entry, so the radical must be visually represented with an image instead.</param>
-    /// <param name="CharacterImages">A collection of images of the radical. See table below for the object structure.</param>
-    public record RadicalAttributes(
-        int[] AmalgamationSubjectIds,
-        string? Characters,
-        CharacterImageObjectAttributes[] CharacterImages);
-    
-    /// <summary></summary>
-    /// <param name="Url">The location of the image.</param>
     /// <param name="ContentType">The content type of the image. Currently the API delivers image/png and image/svg+xml.</param>
     /// <param name="Metadata">Details about the image. Each content_type returns a uniquely structured object.</param>
+    /// <param name="Url">The location of the image.</param>
     public record CharacterImageObjectAttributes(
-        string Url,
         string ContentType,
-        PronunciationAudioMetadataObjectAttributes Metadata);
+        PronunciationAudioMetadataObjectAttributes Metadata,
+        string Url);
     
     /// <summary></summary>
     /// <param name="InlineStyles">The SVG asset contains built-in CSS styling</param>
@@ -253,49 +219,62 @@ namespace Nekogumi.WaniKani.Services
         string StyleName);
     
     /// <summary></summary>
-    /// <param name="AmalgamationSubjectIds">An array of numeric identifiers for the vocabulary that have the kanji as a component.</param>
-    /// <param name="ComponentSubjectIds">An array of numeric identifiers for the radicals that make up this kanji. Note that these are the subjects that must have passed assignments in order to unlock this subject's assignment.</param>
-    /// <param name="MeaningHint">Meaning hint for the kanji.</param>
-    /// <param name="ReadingHint">Reading hint for the kanji.</param>
-    /// <param name="ReadingMnemonic">The kanji's reading mnemonic.</param>
-    /// <param name="Readings">Selected readings for the kanji. See table below for the object structure.</param>
-    /// <param name="VisuallySimilarSubjectIds">An array of numeric identifiers for kanji which are visually similar to the kanji in question.</param>
-    public record KanjiAttributes(
-        int[] AmalgamationSubjectIds,
-        int[] ComponentSubjectIds,
-        string? MeaningHint,
-        string? ReadingHint,
-        string ReadingMnemonic,
-        ReadingObjectAttributes[] Readings,
-        int[] VisuallySimilarSubjectIds);
-    
-    /// <summary></summary>
-    /// <param name="Reading">A singular subject reading.</param>
-    /// <param name="Primary">Indicates priority in the WaniKani system.</param>
     /// <param name="AcceptedAnswer">Indicates if the reading is used to evaluate user input for correctness.</param>
+    /// <param name="Primary">Indicates priority in the WaniKani system.</param>
+    /// <param name="Reading">A singular subject reading.</param>
     /// <param name="Type">The kanji reading's classfication: kunyomi, nanori, or onyomi.</param>
     public record ReadingObjectAttributes(
-        string Reading,
-        bool Primary,
         bool AcceptedAnswer,
+        bool Primary,
+        string Reading,
         string Type);
     
     /// <summary></summary>
-    /// <param name="ComponentSubjectIds">An array of numeric identifiers for the kanji that make up this vocabulary. Note that these are the subjects that must be have passed assignments in order to unlock this subject's assignment.</param>
+    /// <param name="AmalgamationSubjectIds">An array of numeric identifiers for the kanji that have the radical as a component.</param>
+    /// <param name="AuxiliaryMeanings">Collection of auxiliary meanings. See table below for the object structure.</param>
+    /// <param name="CharacterImages">A collection of images of the radical. See table below for the object structure.</param>
+    /// <param name="Characters">Unlike kanji and vocabulary, radicals can have a null value for characters. Not all radicals have a UTF entry, so the radical must be visually represented with an image instead.</param>
+    /// <param name="ComponentSubjectIds">An array of numeric identifiers for the radicals that make up this kanji. Note that these are the subjects that must have passed assignments in order to unlock this subject's assignment.</param>
     /// <param name="ContextSentences">A collection of context sentences. See table below for the object structure.</param>
+    /// <param name="CreatedAt">Timestamp when the subject was created.</param>
+    /// <param name="DocumentUrl">A URL pointing to the page on wanikani.com that provides detailed information about this subject.</param>
+    /// <param name="HiddenAt">Timestamp when the subject was hidden, indicating associated assignments will no longer appear in lessons or reviews and that the subject page is no longer visible on wanikani.com.</param>
+    /// <param name="LessonPosition">The position that the subject appears in lessons. Note that the value is scoped to the level of the subject, so there are duplicate values across levels.</param>
+    /// <param name="Level">The level of the subject, from 1 to 60.</param>
+    /// <param name="MeaningHint">Meaning hint for the kanji.</param>
     /// <param name="MeaningMnemonic">The subject's meaning mnemonic.</param>
+    /// <param name="Meanings">The subject meanings. See table below for the object structure.</param>
     /// <param name="PartsOfSpeech">Parts of speech.</param>
     /// <param name="PronunciationAudios">A collection of pronunciation audio. See table below for the object structure.</param>
-    /// <param name="Readings">Selected readings for the vocabulary. See table below for the object structure.</param>
-    /// <param name="ReadingMnemonic">The subject's reading mnemonic.</param>
-    public record VocabularyAttributes(
+    /// <param name="ReadingHint">Reading hint for the kanji.</param>
+    /// <param name="ReadingMnemonic">The kanji's reading mnemonic.</param>
+    /// <param name="Readings">Selected readings for the kanji. See table below for the object structure.</param>
+    /// <param name="Slug">The string that is used when generating the document URL for the subject. Radicals use their meaning, downcased. Kanji and vocabulary use their characters.</param>
+    /// <param name="SpacedRepetitionSystemId">Unique identifier of the associated spaced_repetition_system.</param>
+    /// <param name="VisuallySimilarSubjectIds">An array of numeric identifiers for kanji which are visually similar to the kanji in question.</param>
+    public record SubjectData(
+        int[] AmalgamationSubjectIds,
+        AuxiliaryMeaningObjectAttributes[] AuxiliaryMeanings,
+        CharacterImageObjectAttributes[] CharacterImages,
+        string? Characters,
         int[] ComponentSubjectIds,
         ContextSentenceObjectAttributes[] ContextSentences,
+        DateTime CreatedAt,
+        string DocumentUrl,
+        DateTime? HiddenAt,
+        int LessonPosition,
+        int Level,
+        string? MeaningHint,
         string MeaningMnemonic,
+        MeaningObjectAttributes[] Meanings,
         string[] PartsOfSpeech,
         PronunciationAudioObjectAttributes[] PronunciationAudios,
+        string? ReadingHint,
+        string ReadingMnemonic,
         ReadingObjectAttributes[] Readings,
-        string ReadingMnemonic);
+        string Slug,
+        int SpacedRepetitionSystemId,
+        int[] VisuallySimilarSubjectIds);
     
     /// <summary></summary>
     /// <param name="En">English translation of the sentence</param>
@@ -305,25 +284,25 @@ namespace Nekogumi.WaniKani.Services
         string Ja);
     
     /// <summary></summary>
-    /// <param name="Url">The location of the audio.</param>
     /// <param name="ContentType">The content type of the audio. Currently the API delivers audio/mpeg and audio/ogg.</param>
     /// <param name="Metadata">Details about the pronunciation audio. See table below for details.</param>
+    /// <param name="Url">The location of the audio.</param>
     public record PronunciationAudioObjectAttributes(
-        string Url,
         string ContentType,
-        PronunciationAudioMetadataObjectAttributes Metadata);
+        PronunciationAudioMetadataObjectAttributes Metadata,
+        string Url);
     
     /// <summary></summary>
     /// <param name="Gender">The gender of the voice actor.</param>
-    /// <param name="SourceId">A unique ID shared between same source pronunciation audio.</param>
     /// <param name="Pronunciation">Vocabulary being pronounced in kana.</param>
+    /// <param name="SourceId">A unique ID shared between same source pronunciation audio.</param>
     /// <param name="VoiceActorId">A unique ID belonging to the voice actor.</param>
     /// <param name="VoiceActorName">Humanized name of the voice actor.</param>
     /// <param name="VoiceDescription">Description of the voice.</param>
     public record PronunciationAudioMetadataObjectAttributes(
         string Gender,
-        int SourceId,
         string Pronunciation,
+        int SourceId,
         int VoiceActorId,
         string VoiceActorName,
         string VoiceDescription);

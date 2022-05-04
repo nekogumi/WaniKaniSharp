@@ -50,6 +50,13 @@ var skippedChapterIds = new[]
     "common-attributes",
 };
 
+var mergedClasses = new Dictionary<string, string>
+{
+    ["subject-data-structure"] = "subject-data-structure",
+    ["radical-attributes"] = "subject-data-structure",
+    ["kanji-attributes"] = "subject-data-structure",
+    ["vocabulary-attributes"] = "subject-data-structure",
+};
 
 foreach (var resource in resourcesIds)
 {
@@ -94,8 +101,8 @@ foreach (var resource in resourcesIds)
     var nodes = htmlDoc.DocumentNode.SelectNodes($"{left}[count(.|{right}) = count({right})]");
 
     //Console.WriteLine("-------------------------");
-    string? id = null;
-    string? label = null;
+    string id = string.Empty;
+    string label = string.Empty;
     foreach (var node in nodes)
     {
         if (node.Name.ToLower() == "table")
@@ -107,11 +114,44 @@ foreach (var resource in resourcesIds)
                                            select cell.InnerText).ToArray()
                               select new ParameterDefinition(
                                   Name: cells[0].SnakeToUpperCamelCase(),
-                                  Type: FieldTypeConverter(cells[1], resource.Identification, cells[0]),
+                                  Type: FieldTypeConverter(cells[1], id, cells[0]),
                                   Description: cells[2].UnescapeHTML()
                               )).ToArray();
-                var @class = new ClassDefinition(resource.Identification, id ?? string.Empty, label ?? string.Empty, fields);
-                classes.Add(@class);
+                if (mergedClasses.TryGetValue(id, out var mergedClassId))
+                {
+                    var @class = classes.FirstOrDefault(c => c.Id == mergedClassId);
+                    if (@class is null)
+                        @class = new ClassDefinition(resource.Identification, mergedClassId, label, fields);
+                    else
+                    {
+                        classes.Remove(@class);
+                        var mergedFields = @class.Fields.ToList();
+                        foreach (var field in fields)
+                        {
+                            var existing = mergedFields.FirstOrDefault(f => f.Name == field.Name);
+                            if (existing is null)
+                                mergedFields.Add(field);
+                            else if (existing.Type != field.Type)
+                            {
+                                if (existing.Type + "?" == field.Type) 
+                                {
+                                    mergedFields.Remove(existing);
+                                    mergedFields.Add(field);
+                                }
+                                else if (existing.Type != field.Type + "?")
+                                    mergedFields.Add(field);
+                            }
+                        }
+
+                        @class = new ClassDefinition(@class.Resource, @class.Id, @class.Name, mergedFields.ToArray());
+                    }
+                    classes.Add(@class);
+                }
+                else
+                {
+                    var @class = new ClassDefinition(resource.Identification, id, label, fields);
+                    classes.Add(@class);
+                }
             }
         }
         else if (!skippedChapterIds.Contains(node.Id))
@@ -125,7 +165,7 @@ foreach (var resource in resourcesIds)
     resources.Add(new ResourceDefinition(resource.Identification, endpoint, dataStructure));
 }
 
-#endregion 
+#endregion
 
 #region Code Generation
 
@@ -216,7 +256,7 @@ foreach (var resource in resourcesIds)
         ["SubscriptionObjectAttributes.Type"] = "SubscriptionType",
         ["AssignmentData.SubjectType"] = "SubjectType",
     };
-    
+
     var objectTypeClassNames = new Dictionary<string, string>()
     {
         ["MetadataObjectAttributes"] = "PronunciationAudioMetadataObjectAttributes",
@@ -264,7 +304,9 @@ foreach (var resource in resourcesIds)
             if (classesName.TryGetValue(@class.Id, out var className))
             {
                 var fields = new List<(string fieldName, string type, string desc)>();
-                foreach (var field in @class.Fields)
+                foreach (var field in from field in @class.Fields
+                                      orderby field.Name
+                                      select field)
                 {
                     var fieldName = field.Name;
                     if (!attributeTypes.TryGetValue(className + "." + fieldName, out var type))
@@ -339,7 +381,7 @@ string EndpointParameterTypeConverter(string Type, ResourceIdentification ressou
     return Type;
 }
 
-string FieldTypeConverter(string Type, ResourceIdentification ressource, string parameter)
+string FieldTypeConverter(string Type, string @classId, string parameter)
 {
 
     Dictionary<string, string> exceptions = new()
@@ -347,7 +389,7 @@ string FieldTypeConverter(string Type, ResourceIdentification ressource, string 
 
     };
 
-    if (exceptions.TryGetValue($"{ressource.ClassName}.{parameter}", out var newType))
+    if (exceptions.TryGetValue($"{classId}.{parameter}", out var newType))
         return newType;
 
     Dictionary<string, string> EndpointParameterTypeConverterDict = new()
