@@ -312,6 +312,7 @@ string EndpointParameterTypeConverter(string Type, ResourceIdentification ressou
     Dictionary<string, string> exceptions = new()
     {
         ["Subjects.levels"] = "IEnumerable<int>?",
+        ["Assignments.levels"] = "IEnumerable<int>?",
     };
 
     if (exceptions.TryGetValue($"{ressource.ClassName}.{parameter}", out var newType))
@@ -339,6 +340,7 @@ string FieldTypeConverter(string type, string @classId, string fieldName)
     {
         ["SubscriptionObjectAttributes.Type"] = "SubscriptionType",
         ["AssignmentData.SubjectType"] = "SubjectType",
+        ["StudyMaterialData.SubjectType"] = "SubjectType",
         ["CharacterImageObjectAttributes.Metadata"] = "CharacterImageMetadataObjectAttributes",
         ["PronunciationAudioObjectAttributes.Metadata"] = "PronunciationAudioMetadataObjectAttributes",
     };

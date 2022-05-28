@@ -173,7 +173,7 @@ namespace Nekogumi.WaniKani.Services
         object[] MeaningSynonyms,
         string? ReadingNote,
         int SubjectId,
-        string SubjectType);
+        SubjectType SubjectType);
     
     #endregion
     

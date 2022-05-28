@@ -16,7 +16,7 @@ namespace Nekogumi.WaniKani.Services
                 bool? immediately_available_for_lessons = null,
                 bool? immediately_available_for_review = null,
                 bool? in_review = null,
-                IEnumerable<long>? levels = null,
+                IEnumerable<int>? levels = null,
                 IEnumerable<long>? srs_stages = null,
                 bool? started = null,
                 IEnumerable<long>? subject_ids = null,

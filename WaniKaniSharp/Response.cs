@@ -32,6 +32,20 @@ namespace Nekogumi.WaniKani.Services
         spaced_repetition_system,
     }
 
+    public enum SubscriptionType
+    {
+        Free,
+        Recurring,
+        Lifetime,
+    }
+
+    public enum SubjectType
+    {
+        Radical = ObjectType.Radical,
+        Kanji = ObjectType.Kanji,
+        Vocabulary = ObjectType.Vocabulary,
+    }
+
     /// <summary>
     /// Response base class.
     /// </summary>
