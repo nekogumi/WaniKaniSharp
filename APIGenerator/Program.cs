@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using HtmlAgilityPack;
 
 
-const bool download = true;
+const bool download = false;
 
 #region Load HTML file
 
@@ -184,14 +184,7 @@ foreach (var @class in classesDeclarations)
     using var writer = new IndentedTextWriter(stream, "    ");
 
     writer.WriteLine("// AUTO GENERATED FILE -- DO NOT EDIT");
-    writer.WriteLine("using System;");
-    writer.WriteLine("using System.Collections.Generic;");
-    writer.WriteLine("using System.Threading;");
-    writer.WriteLine("using System.Threading.Tasks;");
-    writer.WriteLine("");
-    writer.WriteLine("namespace Nekogumi.WaniKani.Services");
-    writer.WriteLine("{");
-    writer.Indent++;
+    writer.WriteLine("namespace Nekogumi.WaniKani.Services;");
 
     writer.WriteLine("partial class WaniKaniConnection");
     writer.WriteLine("{");
@@ -248,9 +241,6 @@ foreach (var @class in classesDeclarations)
 
     writer.Indent--;
     writer.WriteLine("}");
-
-    writer.Indent--;
-    writer.WriteLine("}");
 }
 
 {
@@ -258,11 +248,7 @@ foreach (var @class in classesDeclarations)
     using var writer = new IndentedTextWriter(stream, "    ");
 
     writer.WriteLine("// AUTO GENERATED FILE -- DO NOT EDIT");
-    writer.WriteLine("using System;");
-    writer.WriteLine("");
-    writer.WriteLine("namespace Nekogumi.WaniKani.Services");
-    writer.WriteLine("{");
-    writer.Indent++;
+    writer.WriteLine("namespace Nekogumi.WaniKani.Services;");
 
     foreach (var group in from @class in classes
                           group @class by @class.Resource.Title)
@@ -298,8 +284,6 @@ foreach (var @class in classesDeclarations)
         writer.WriteLine();
     }
 
-    writer.Indent--;
-    writer.WriteLine("}");
 }
 
 #endregion

@@ -1,0 +1,10 @@
+﻿global using global::System;
+global using global::System.Collections.Generic;
+global using global::System.Diagnostics;
+global using global::System.Linq;
+global using global::System.Text;
+global using global::System.Text.Json;
+global using global::System.Text.Json.Serialization;
+global using global::System.Text.RegularExpressions;
+global using global::System.Threading;
+global using global::System.Threading.Tasks;
