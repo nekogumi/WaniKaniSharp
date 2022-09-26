@@ -97,21 +97,65 @@ public partial class WaniKaniConnection : IDisposable
     /// <summary>
     /// Creates a study material for a specific `subject_id`.
     /// </summary>
-    /// <param name="subject_id">Unique identifier of the subject.</param>
-    /// <param name="meaning_note">Meaning notes specific for the subject.</param>
-    /// <param name="reading_note">Reading notes specific for the subject.</param>
-    /// <param name="meaning_synonyms">Meaning synonyms for the subject.</param>
+    /// <param name="subjectId">Unique identifier of the subject.</param>
+    /// <param name="meaningNote">Meaning notes specific for the subject.</param>
+    /// <param name="readingNote">Reading notes specific for the subject.</param>
+    /// <param name="meaningSynonyms">Meaning synonyms for the subject.</param>
     /// <param name="cancellationToken">Asynchronous operation cancellation token</param>
     /// <returns></returns>
-    public async Task CreateStudyMaterialAsync(
-        long subject_id,
-        string? meaning_note = null,
-        string? reading_note = null,
-        IEnumerable<string>? meaning_synonyms = null,
-        CancellationToken cancellationToken = default)
-    {
+    public Task CreateStudyMaterialAsync(
+            long subjectId,
+            string? meaningNote = null,
+            string? readingNote = null,
+            IEnumerable<string>? meaningSynonyms = null,
+            CancellationToken cancellationToken = default)
+        => connection.PostAsync(
+            "study_materials",
+             new
+             {
+                 study_material = new
+                 {
+                     subject_id = subjectId,
+                     meaning_note = meaningNote,
+                     reading_note = readingNote,
+                     meaning_synonyms = meaningSynonyms?.ToArray()
+                 }
+             },
+             new JsonSerializerOptions
+             {
+                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+             },
+             cancellationToken);
 
-    }
-
+    /// <summary>
+    /// Updates a study material for a specific id.
+    /// </summary>
+    /// <param name="id">Unique identifier of the study material.</param>
+    /// <param name="meaningNote">Meaning notes specific for the subject.</param>
+    /// <param name="readingNote">Reading notes specific for the subject.</param>
+    /// <param name="meaningSynonyms">Meaning synonyms for the subject.</param>
+    /// <param name="cancellationToken">Asynchronous operation cancellation token</param>
+    /// <returns></returns>
+    public Task UpdateStudyMaterialAsync(
+            long id,
+            string? meaningNote = null,
+            string? readingNote = null,
+            IEnumerable<string>? meaningSynonyms = null,
+            CancellationToken cancellationToken = default)
+        => connection.PutJSonAsync(
+            $"study_materials/{id}",
+            new
+            {
+                study_material = new
+                {
+                    meaning_note = meaningNote,
+                    reading_note = readingNote,
+                    meaning_synonyms = meaningSynonyms?.ToArray()
+                }
+            },
+            new JsonSerializerOptions
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            },
+            cancellationToken);
 }
-

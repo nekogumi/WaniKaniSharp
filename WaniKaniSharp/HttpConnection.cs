@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Web;
 
 namespace Nekogumi.WaniKani.Services;
@@ -35,7 +36,7 @@ public class HttpConnection : IDisposable
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (eTag is not null)
+            if (eTag is not null && CacheStrategy == CacheStrategy.Cache)
             {
                 request.Headers.IfNoneMatch.Clear();
                 request.Headers.IfNoneMatch.Add(eTag);
@@ -296,11 +297,59 @@ public class HttpConnection : IDisposable
         return json;
     }
 
-    public async Task PutAsync(
-        string endpoint
-
-        )
+    public async Task PutJSonAsync<TInput>(
+        string endpoint,
+        TInput input,
+        JsonSerializerOptions? jsonInputOptions,
+        CancellationToken cancellationToken,
+        params (string name, object? value)[] parameters)
     {
+        string query = BuildQuery(endpoint, parameters);
 
+        var content = JsonContent.Create(input, options: jsonInputOptions);
+
+        cancellationToken.ThrowIfCancellationRequested();
+        await connectionSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Handler.CacheStrategy = CacheStrategy.NoCache;
+            Handler.eTag = null;
+
+            var response = await Client.PutAsync(query, content, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            connectionSemaphore.Release();
+        }
+    }
+
+    public async Task PostAsync<TInput>(
+        string endpoint,
+        TInput input,
+        JsonSerializerOptions? jsonInputOptions,
+        CancellationToken cancellationToken,
+        params (string name, object? value)[] parameters)
+    {
+        string query = BuildQuery(endpoint, parameters);
+
+        var content = JsonContent.Create(input, options: jsonInputOptions);
+
+        cancellationToken.ThrowIfCancellationRequested();
+        await connectionSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Handler.CacheStrategy = CacheStrategy.NoCache;
+            Handler.eTag = null;
+
+            var response = await Client.PostAsync(query, content, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            connectionSemaphore.Release();
+        }
     }
 }
