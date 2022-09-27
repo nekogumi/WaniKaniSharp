@@ -36,11 +36,11 @@ partial class WaniKaniConnection
             , ("updated_after", updated_after)
             );
     
-    public Task<Response<AssignmentData>> QueryAssignmentAsync(
+    public Task<Resource<AssignmentData>> QueryAssignmentAsync(
             long id,
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
             CancellationToken cancellationToken = default)
-        => GetJsonAsync<Response<AssignmentData>>($"assignments/{id}", cacheStrategy, cancellationToken);
+        => GetJsonAsync<Resource<AssignmentData>>($"assignments/{id}", cacheStrategy, cancellationToken);
     
     public Task<ResponseCollection<LevelProgressionData>> QueryLevelProgressionsAsync(
             DateTime? updated_after = null,
@@ -50,11 +50,11 @@ partial class WaniKaniConnection
             , ("updated_after", updated_after)
             );
     
-    public Task<Response<LevelProgressionData>> QueryLevelProgressionAsync(
+    public Task<Resource<LevelProgressionData>> QueryLevelProgressionAsync(
             long id,
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
             CancellationToken cancellationToken = default)
-        => GetJsonAsync<Response<LevelProgressionData>>($"level_progressions/{id}", cacheStrategy, cancellationToken);
+        => GetJsonAsync<Resource<LevelProgressionData>>($"level_progressions/{id}", cacheStrategy, cancellationToken);
     
     public Task<ResponseCollection<ResetData>> QueryResetsAsync(
             DateTime? updated_after = null,
@@ -64,11 +64,11 @@ partial class WaniKaniConnection
             , ("updated_after", updated_after)
             );
     
-    public Task<Response<ResetData>> QueryResetAsync(
+    public Task<Resource<ResetData>> QueryResetAsync(
             long id,
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
             CancellationToken cancellationToken = default)
-        => GetJsonAsync<Response<ResetData>>($"resets/{id}", cacheStrategy, cancellationToken);
+        => GetJsonAsync<Resource<ResetData>>($"resets/{id}", cacheStrategy, cancellationToken);
     
     public Task<ResponseCollection<ReviewData>> QueryReviewsAsync(
             IEnumerable<long>? ids = null,
@@ -82,11 +82,11 @@ partial class WaniKaniConnection
             , ("updated_after", updated_after)
             );
     
-    public Task<Response<ReviewData>> QueryReviewAsync(
+    public Task<Resource<ReviewData>> QueryReviewAsync(
             long id,
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
             CancellationToken cancellationToken = default)
-        => GetJsonAsync<Response<ReviewData>>($"reviews/{id}", cacheStrategy, cancellationToken);
+        => GetJsonAsync<Resource<ReviewData>>($"reviews/{id}", cacheStrategy, cancellationToken);
     
     public Task<ResponseCollection<ReviewStatisticData>> QueryReviewStatisticsAsync(
             IEnumerable<long>? ids = null,
@@ -106,11 +106,11 @@ partial class WaniKaniConnection
             , ("updated_after", updated_after)
             );
     
-    public Task<Response<ReviewStatisticData>> QueryReviewStatisticAsync(
+    public Task<Resource<ReviewStatisticData>> QueryReviewStatisticAsync(
             long id,
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
             CancellationToken cancellationToken = default)
-        => GetJsonAsync<Response<ReviewStatisticData>>($"review_statistics/{id}", cacheStrategy, cancellationToken);
+        => GetJsonAsync<Resource<ReviewStatisticData>>($"review_statistics/{id}", cacheStrategy, cancellationToken);
     
     public Task<ResponseCollection<SpacedRepetitionSystemData>> QuerySpacedRepetitionSystemsAsync(
             DateTime? updated_after = null,
@@ -120,11 +120,11 @@ partial class WaniKaniConnection
             , ("updated_after", updated_after)
             );
     
-    public Task<Response<SpacedRepetitionSystemData>> QuerySpacedRepetitionSystemAsync(
+    public Task<Resource<SpacedRepetitionSystemData>> QuerySpacedRepetitionSystemAsync(
             long id,
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
             CancellationToken cancellationToken = default)
-        => GetJsonAsync<Response<SpacedRepetitionSystemData>>($"spaced_repetition_systems/{id}", cacheStrategy, cancellationToken);
+        => GetJsonAsync<Resource<SpacedRepetitionSystemData>>($"spaced_repetition_systems/{id}", cacheStrategy, cancellationToken);
     
     public Task<ResponseCollection<StudyMaterialData>> QueryStudyMaterialsAsync(
             IEnumerable<long>? ids = null,
@@ -140,11 +140,11 @@ partial class WaniKaniConnection
             , ("updated_after", updated_after)
             );
     
-    public Task<Response<StudyMaterialData>> QueryStudyMaterialAsync(
+    public Task<Resource<StudyMaterialData>> QueryStudyMaterialAsync(
             long id,
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
             CancellationToken cancellationToken = default)
-        => GetJsonAsync<Response<StudyMaterialData>>($"study_materials/{id}", cacheStrategy, cancellationToken);
+        => GetJsonAsync<Resource<StudyMaterialData>>($"study_materials/{id}", cacheStrategy, cancellationToken);
     
     public Task<ResponseCollection<SubjectData>> QuerySubjectsAsync(
             IEnumerable<string>? types = null,
@@ -162,11 +162,11 @@ partial class WaniKaniConnection
             , ("updated_after", updated_after)
             );
     
-    public Task<Response<SubjectData>> QuerySubjectAsync(
+    public Task<Resource<SubjectData>> QuerySubjectAsync(
             long id,
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
             CancellationToken cancellationToken = default)
-        => GetJsonAsync<Response<SubjectData>>($"subjects/{id}", cacheStrategy, cancellationToken);
+        => GetJsonAsync<Resource<SubjectData>>($"subjects/{id}", cacheStrategy, cancellationToken);
     
     public Task<Response<SummaryData>> QuerySummaryAsync(
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
@@ -186,10 +186,10 @@ partial class WaniKaniConnection
             , ("updated_after", updated_after)
             );
     
-    public Task<Response<VoiceActorData>> QueryVoiceActorAsync(
+    public Task<Resource<VoiceActorData>> QueryVoiceActorAsync(
             long id,
             CacheStrategy cacheStrategy = CacheStrategy.Cache,
             CancellationToken cancellationToken = default)
-        => GetJsonAsync<Response<VoiceActorData>>($"voice_actors/{id}", cacheStrategy, cancellationToken);
+        => GetJsonAsync<Resource<VoiceActorData>>($"voice_actors/{id}", cacheStrategy, cancellationToken);
     
 }
