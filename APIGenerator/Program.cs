@@ -224,7 +224,7 @@ foreach (var @class in classesDeclarations)
 
         if (!isCollections.Contains(resource.Identification.ClassName))
         {
-            responseType = "Response<" + resource.DataStructure.ClassName + "Data>";
+            responseType = "Resource<" + resource.DataStructure.ClassName + "Data>";
             writer.WriteLine($"public Task<{responseType}> Query{resource.DataStructure.ClassName}Async(");
             writer.Indent++;
             writer.Indent++;
